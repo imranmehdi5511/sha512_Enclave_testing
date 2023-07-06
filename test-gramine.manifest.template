@@ -1,0 +1,34 @@
+loader.entrypoint = "file:{{ gramine.libos }}"
+libos.entrypoint = "/test-gramine"
+loader.log_level = "{{ log_level }}"
+
+loader.env.LD_LIBRARY_PATH = "/lib:/usr/lib/x86_64-linux-gnu/"
+
+fs.mounts = [
+  { path = "/lib", uri = "file:{{ gramine.runtimedir() }}" },
+  { path = "/test-gramine", uri = "file:test-gramine" },
+  { path = "/usr/lib/x86_64-linux-gnu", uri = "file:/usr/lib/x86_64-linux-gnu" },
+]
+
+sgx.debug = true
+sgx.edmm_enable = {{ 'true' if env.get('EDMM', '0') == '1' else 'false' }}
+
+sgx.trusted_files = [
+  "file:{{ gramine.libos }}",
+  "file:test-gramine",
+  "file:logs.txt",
+  "file:{{ gramine.runtimedir() }}/",
+  "file:/usr/lib/x86_64-linux-gnu/libcrypto.so.3",
+  "file:/usr/lib/x86_64-linux-gnu/",
+  "file:/home/imran/gramine/CI-Examples/test-gramine/logs.txt",
+  ]
+sgx.allowed_files = [
+  "file:/home/imran/gramine/CI-Examples/test-gramine/logs.txt",
+  "file:logs.txt",
+  "file:/home/imran/gramine/CI-Examples/test-gramine/",
+]
+
+fs.entrypoint = "/test-gramine"
+loader.argv0_override = "/test-gramine"
+loader.insecure__use_cmdline_argv = true
+
